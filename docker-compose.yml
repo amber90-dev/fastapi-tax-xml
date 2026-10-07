@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: tax
+      POSTGRES_PASSWORD: tax
+      POSTGRES_DB: tax
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tax"]
+      interval: 3s
+      retries: 10
+  api:
+    build: .
+    environment:
+      APP_DATABASE_URL: postgresql+psycopg2://tax:tax@db:5432/tax
+    ports: ["8000:8000"]
+    depends_on:
+      db:
+        condition: service_healthy
