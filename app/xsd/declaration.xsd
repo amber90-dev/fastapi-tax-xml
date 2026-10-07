@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Simplified, illustrative schema for a self-employed income tax declaration.
+     A real filing system would use the authority's official XSD instead. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="urn:example:tax-declaration:v1"
+           targetNamespace="urn:example:tax-declaration:v1"
+           elementFormDefault="qualified">
+
+  <xs:simpleType name="Cents">
+    <xs:restriction base="xs:long">
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TaxId">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[A-Z]{2}[0-9]{8,10}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ExpenseMethod">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="actual"/>
+      <xs:enumeration value="flat_rate"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="Declaration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Header">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TaxYear" type="xs:gYear"/>
+              <xs:element name="GeneratedAt" type="xs:dateTime"/>
+              <xs:element name="DeclarationId" type="xs:string"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Taxpayer">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="FullName">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:minLength value="2"/>
+                    <xs:maxLength value="200"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="TaxId" type="TaxId"/>
+              <xs:element name="DataBoxId" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Business">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ExpenseMethod" type="ExpenseMethod"/>
+              <xs:element name="IncomeCents" type="Cents"/>
+              <xs:element name="ClaimedExpensesCents" type="Cents"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Calculation">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TaxBaseCents" type="Cents"/>
+              <xs:element name="TaxBeforeCreditCents" type="Cents"/>
+              <xs:element name="CreditCents" type="Cents"/>
+              <xs:element name="TaxDueCents" type="Cents"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required" fixed="1.0"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
